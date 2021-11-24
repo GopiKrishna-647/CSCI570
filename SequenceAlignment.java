@@ -95,8 +95,8 @@ public class SequenceAlignment {
 	public static void sequenceAlignment(String X, String Y) {
 
 		// 2D arr with length of each string
-		int m = X.length()+1;
-		int n = Y.length()+1;
+		int m = Y.length()+1;
+		int n = X.length()+1;
 		int[][] seqArr = new int[m][n];
 		int gapPenalty = 30;
 
@@ -113,17 +113,17 @@ public class SequenceAlignment {
 		// opt loop
 		for (int i = 1; i < m; i++) {
 			for (int j = 1; j < n; j++) {
-				if(X.charAt(i-1) == Y.charAt(j-1)) {
+				if(Y.charAt(i-1) == X.charAt(j-1)) {
 					seqArr[i][j] = seqArr[i-1][j-1];
 				} else {
-					seqArr[i][j] = Math.min(seqArr[i - 1][j - 1] + misMatch(X.charAt(i-1),Y.charAt(j-1)),
+					seqArr[i][j] = Math.min(seqArr[i - 1][j - 1] + misMatch(Y.charAt(i-1),X.charAt(j-1)),
 													Math.min(seqArr[i][j - 1] + gapPenalty, seqArr[i - 1][j] + gapPenalty));
 				}
 			}
 		}
 
 
-		// For Testing Purposes:
+		//For Testing Purposes:
 		for (int[] x1 : seqArr) {
 			for (int y : x1) {
 				System.out.print(y + " ");
@@ -131,43 +131,48 @@ public class SequenceAlignment {
 			System.out.println();
 		}
 
-
 		String outputX = "";
 		String outputY = "";
 
 		//Traceback
 		int i = m-1;
 		int j = n-1;
-		while((i > 0) && (j > 0)){
+		while((i > 1) || (j > 1)){
 
 			// If X and Y characters at i-1 and j-1 are same, do nothing
-			if(X.charAt(i-1) == Y.charAt(j-1)){
-				outputX = outputX + String.valueOf(X.charAt(i-1));
-				outputY = outputY + String.valueOf(Y.charAt(j-1));
+			if(Y.charAt(i-1) == X.charAt(j-1)){
+				outputY = outputY + String.valueOf(Y.charAt(i-1));
+				outputX = outputX + String.valueOf(X.charAt(j-1));
 				i--;
 				j--;
 			}
 
 			// If value of seqArr[i][j] is from vertical line gap penalty
 			else if(seqArr[i][j] == (seqArr[i][j - 1] + gapPenalty)){
-				outputX = outputX + "_";
-				outputY = outputY + String.valueOf(Y.charAt(j-1));
+				outputY = outputY + "_";
+				outputX = outputX + String.valueOf(X.charAt(j-1));
 				j--;
 			}
 
 			// If value of seqArr[i][j] is from horizontal line gap penalty
 			else if(seqArr[i][j] == (seqArr[i-1][j] + gapPenalty)){
-				outputX = outputX + String.valueOf(X.charAt(i-1));
-				outputY = outputY + "_";
+				outputY = outputY + String.valueOf(Y.charAt(i-1));
+				outputX = outputX + "_";
 				i--;
 			}
 
 			// If value of seqArr[i][j] is from a mismatch and not gap penalty
-			else if(seqArr[i][j] == (seqArr[i - 1][j - 1] + misMatch(X.charAt(i-1),Y.charAt(j-1))) ){
-				outputX = outputX + String.valueOf(X.charAt(i-1));
-				outputY = outputY + String.valueOf(Y.charAt(j-1));
+			else if(seqArr[i][j] == (seqArr[i - 1][j - 1] + misMatch(Y.charAt(i-1),X.charAt(j-1))) ){
+				outputY = outputY + String.valueOf(Y.charAt(i-1));
+				outputX = outputX + String.valueOf(X.charAt(j-1));
 				i--;
+				j--;
 			}
+
+
+
+
+
 		}
 
 		StringBuffer reverseX = new StringBuffer(outputX);
@@ -179,19 +184,30 @@ public class SequenceAlignment {
 		outputY = reverseY.toString();
 
 		// For Testing Purposes
-		System.out.println(X);
-		System.out.println(Y);
-		System.out.println(outputX);
-		System.out.println(outputY);
+		System.out.println("X: " + X);
+		System.out.println("Y: " + Y);
+		System.out.println("outputX: " + outputX);
+		System.out.println("outputY: " + outputY);
 
 		// Parse data for the output File
-		if (outputX.length() > 50){
-			outputX = outputX.toString().substring(0,51);
-		}
-		if (outputY.length() > 50){
-			outputX = outputX.toString().substring(0,51);
-		}
 
+		// TODO: First 50 X, First 50 Y
+		// TODO: Last 50 X, Last 50 Y
+		// if (outputX.length() > 50){
+		// 	outputX = outputX.toString().substring(0,50);
+		// }
+		// if (outputY.length() > 50){
+		// 	outputY = outputY.toString().substring(0,50);
+		// }
+
+
+		// TODO: First 50 X, First 50 Y
+		// TODO: Last 50 X, Last 50 Y
+		// String alignmentX = outputX.substring(0,50) + " " + outputY.substring(0,50);
+		// String alignmentY = outputX.substring(outputX.length() - 50, outputX.length())
+		// 			+ " " + outputY.substring(outputY.length() - 50, outputY.length());
+
+		// TODO: Fix Overwrite
 		addToOutputFile(outputX, outputY);
 	}
 
