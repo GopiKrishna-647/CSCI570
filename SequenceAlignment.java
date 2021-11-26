@@ -16,7 +16,6 @@ public class SequenceAlignment {
 		createOutputFile();
 
 		finalProject(input);
-		//sequenceAlignment("AGGGCT", "AGGCA");
 	}
 
 	public static void finalProject(File input){
@@ -78,6 +77,16 @@ public class SequenceAlignment {
 			System.out.println("Not same length");
 		}
 
+		// // Make sure the longer string represents Columns while shorter string represents Rows
+		// //Y = columns
+		// //X = rows
+		// String temp = "";
+		// if(X.length() > Y.length()){
+		// 	temp = Y;
+		// 	Y = X;
+		// 	X = temp;
+		// }
+
 		sequenceAlignment(X, Y);
 	}
 
@@ -95,8 +104,9 @@ public class SequenceAlignment {
 	public static void sequenceAlignment(String X, String Y) {
 
 		// 2D arr with length of each string
-		int m = Y.length()+1;
-		int n = X.length()+1;
+		int n = X.length()+1;	// Row
+		int m = Y.length()+1; // Column
+
 		int[][] seqArr = new int[m][n];
 		int gapPenalty = 30;
 
@@ -122,57 +132,49 @@ public class SequenceAlignment {
 			}
 		}
 
-
-		//For Testing Purposes:
-		for (int[] x1 : seqArr) {
-			for (int y : x1) {
-				System.out.print(y + " ");
-			}
-			System.out.println();
-		}
+		// //For Testing Purposes:
+		// for (int[] x1 : seqArr) {
+		// 	for (int y : x1) {
+		// 		System.out.print(y + " ");
+		// 	}
+		// 	System.out.println();
+		// }
 
 		String outputX = "";
 		String outputY = "";
 
-		//Traceback
-		int i = m-1;
-		int j = n-1;
-		while((i > 1) || (j > 1)){
+		int i = m-1; // X Columns
+		int j = n-1; // Y Rows
+		while((i > 0) || (j > 0)){
 
 			// If X and Y characters at i-1 and j-1 are same, do nothing
-			if(Y.charAt(i-1) == X.charAt(j-1)){
-				outputY = outputY + String.valueOf(Y.charAt(i-1));
-				outputX = outputX + String.valueOf(X.charAt(j-1));
-				i--;
-				j--;
+			if((i > 0) && (j > 0) && (Y.charAt(i-1) == X.charAt(j-1))){
+					outputY = outputY + String.valueOf(Y.charAt(i-1));
+					outputX = outputX + String.valueOf(X.charAt(j-1));
+					i--;
+					j--;
 			}
-
 			// If value of seqArr[i][j] is from vertical line gap penalty
-			else if(seqArr[i][j] == (seqArr[i][j - 1] + gapPenalty)){
+			else if((j > 0) && (seqArr[i][j] == (seqArr[i][j - 1] + gapPenalty))){
 				outputY = outputY + "_";
 				outputX = outputX + String.valueOf(X.charAt(j-1));
 				j--;
 			}
 
 			// If value of seqArr[i][j] is from horizontal line gap penalty
-			else if(seqArr[i][j] == (seqArr[i-1][j] + gapPenalty)){
+			else if((i > 0) && (seqArr[i][j] == (seqArr[i-1][j] + gapPenalty))){
 				outputY = outputY + String.valueOf(Y.charAt(i-1));
 				outputX = outputX + "_";
 				i--;
 			}
 
 			// If value of seqArr[i][j] is from a mismatch and not gap penalty
-			else if(seqArr[i][j] == (seqArr[i - 1][j - 1] + misMatch(Y.charAt(i-1),X.charAt(j-1))) ){
+			else if((i > 0) && (j > 0) && (seqArr[i][j] == (seqArr[i - 1][j - 1] + misMatch(Y.charAt(i-1),X.charAt(j-1)))) ){
 				outputY = outputY + String.valueOf(Y.charAt(i-1));
 				outputX = outputX + String.valueOf(X.charAt(j-1));
 				i--;
 				j--;
 			}
-
-
-
-
-
 		}
 
 		StringBuffer reverseX = new StringBuffer(outputX);
@@ -183,32 +185,35 @@ public class SequenceAlignment {
 		outputX = reverseX.toString();
 		outputY = reverseY.toString();
 
-		// For Testing Purposes
-		System.out.println("X: " + X);
-		System.out.println("Y: " + Y);
-		System.out.println("outputX: " + outputX);
-		System.out.println("outputY: " + outputY);
+		// // For Testing Purposes
+		// System.out.println("X: " + X);
+		// System.out.println("Y: " + Y);
+		// System.out.println("outputX: " + outputX);
+		// System.out.println("outputY: " + outputY);
 
 		// Parse data for the output File
+		String firstX = outputX;
+		String firstY = outputY;
+		String secondX = outputX;
+		String secondY = outputY;
 
-		// TODO: First 50 X, First 50 Y
-		// TODO: Last 50 X, Last 50 Y
-		// if (outputX.length() > 50){
-		// 	outputX = outputX.toString().substring(0,50);
-		// }
-		// if (outputY.length() > 50){
-		// 	outputY = outputY.toString().substring(0,50);
-		// }
+		if (outputX.length() > 50){
+			firstX = outputX.toString().substring(0,50);
+			secondX = outputX.toString().substring(outputX.length()-50,outputX.length()-1);
 
+		}
 
-		// TODO: First 50 X, First 50 Y
-		// TODO: Last 50 X, Last 50 Y
-		// String alignmentX = outputX.substring(0,50) + " " + outputY.substring(0,50);
-		// String alignmentY = outputX.substring(outputX.length() - 50, outputX.length())
-		// 			+ " " + outputY.substring(outputY.length() - 50, outputY.length());
+		if (outputY.length() > 50){
+			firstY = outputY.toString().substring(0,50);
+			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
+		}
 
-		// TODO: Fix Overwrite
-		addToOutputFile(outputX, outputY);
+		// line1: First 50 X, First 50 Y
+		// line2: Last 50 X, Last 50 Y
+		String line1 = firstX + " " + firstY;
+		String line2 = secondX + " " + secondY;
+
+		addToOutputFile(line1, line2);
 	}
 
 	/**
@@ -232,10 +237,11 @@ public class SequenceAlignment {
 
 	// Add data to the output.txt file
 	public static void addToOutputFile(String line1, String line2) {
-		//FileWriter output = new FileWriter(System.getProperty("user.dir") + "/output.txt", true);
 
 		try{
-			BufferedWriter buffer = new BufferedWriter(new FileWriter("output.txt"));
+			FileWriter output = new FileWriter(System.getProperty("user.dir") + "/output.txt", true);
+
+			BufferedWriter buffer = new BufferedWriter(output);
 
 			// Write Line1 to output file
 			if(line1!= null || !(line1 == "")){
@@ -250,8 +256,10 @@ public class SequenceAlignment {
 			}
 
 			buffer.close();
+			output.close();
 		}
 		catch(Exception e){
+			System.out.println("An error occurred while writing to the output.txt file.");
 			e.printStackTrace();
 		}
 
