@@ -88,6 +88,7 @@ public class SequenceAlignment {
 		// }
 
 		sequenceAlignment(X, Y);
+		memoryEfficientSequenceAlignemnt(X, Y);
 	}
 
 	public static String parseString(String str, ArrayList<Integer> arr){
@@ -214,6 +215,64 @@ public class SequenceAlignment {
 		String line2 = secondX + " " + secondY;
 
 		addToOutputFile(line1, line2);
+	}
+	
+		public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
+		int m = Y.length() + 1;
+		int n = 2;
+		int gapPenalty = 30;
+		
+		int[][] seqArr = new int[m][2];
+		
+		for(int i = 0; i < m; i++) {
+			seqArr[i][0] = i * 30;
+		}
+		
+		for(int j = 1; j < X.length()+1; j++) {
+			seqArr[0][1] = j * gapPenalty;
+			for(int i = 1; i < m; i++) {
+				seqArr[i][1] = Math.min(seqArr[i - 1][0] + misMatch(Y.charAt(i-1),X.charAt(j-1)), Math.min(seqArr[i][0] + gapPenalty, seqArr[i - 1][1] + gapPenalty));
+			}
+			for(int i = 0; i < m; i++) {
+				seqArr[i][0] = seqArr[i][1];
+			}
+		}
+		System.out.println(seqArr[m-1][1]);
+		return seqArr;
+	}
+	
+	public static int[][] backwardFormulation(String X, String Y) {
+		StringBuilder updatedX = new StringBuilder(X).reverse();
+		StringBuilder updatedY = new StringBuilder(Y).reverse();
+		return memoryEfficientSequenceAlignemnt(updatedX.toString(), updatedY.toString());
+	}
+	
+	public static void divideAndConquerDp(String X, String Y) {
+		int[][] seqArr1 = memoryEfficientSequenceAlignemnt(X, Y.substring(0, (Y.length()/2)));
+		int[][] seqArr2 = backwardFormulation(X, Y.substring((Y.length()/2), Y.length()));
+		int m = X.length();
+		int n = Y.length();
+		
+		if(m <= 2 || n <= 2) {
+			sequenceAlignment(X, Y);
+		}
+		
+		int sum = seqArr1[0][1] + seqArr2[0][1];
+		int index = 0;
+		for(int i = 1; i < n/2;i++) {
+			int temp = seqArr1[i][1] + seqArr2[i][1];
+			if(temp < sum) {
+				sum = temp;
+				index = i;
+			}
+		}
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		indices.add(index);
+		indices.add(n / 2);
+		P.add(indices);
+		divideAndConquerDp(X.substring(0, index+1), Y.substring(0, n/2 + 1));
+		divideAndConquerDp(X.substring(index+1, m), Y.substring(n/2 + 1, n));
+		
 	}
 
 	/**
