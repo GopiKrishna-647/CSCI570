@@ -6,7 +6,7 @@ import java.lang.Math;
 import java.util.*;
 
 public class SequenceAlignment {
-
+	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
