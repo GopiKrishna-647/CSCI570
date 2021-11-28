@@ -7,15 +7,22 @@ import java.util.*;
 
 public class SequenceAlignment {
 	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		Runtime runtime = Runtime.getRuntime();
+		long startMemory = runtime.totalMemory() - runtime.freeMemory();
+		
 		File input = new File(System.getProperty("user.dir") + "/input.txt");
 
 		// Create output file if it does not exist
 		createOutputFile();
 
 		finalProject(input);
+		
+		long endMemory = runtime.totalMemory() - runtime.freeMemory();
+		Double memoryTaken = (endMemory - startMemory)/1024.0;
+		addToOutputFile(memoryTaken.toString(), "");
 	}
 
 	public static void finalProject(File input){
@@ -103,6 +110,9 @@ public class SequenceAlignment {
 	}
 
 	public static void sequenceAlignment(String X, String Y) {
+		long startTime = System.currentTimeMillis();
+		Runtime runtime = Runtime.getRuntime();
+		
 
 		// 2D arr with length of each string
 		int n = X.length()+1;	// Row
@@ -132,6 +142,7 @@ public class SequenceAlignment {
 				}
 			}
 		}
+		System.out.println(seqArr[m-1][n-1]);
 
 		// //For Testing Purposes:
 		// for (int[] x1 : seqArr) {
@@ -215,9 +226,12 @@ public class SequenceAlignment {
 		String line2 = secondX + " " + secondY;
 
 		addToOutputFile(line1, line2);
+		long endTime = System.currentTimeMillis();
+		Double timeTaken = (endTime - startTime)/1000.0;
+		addToOutputFile(timeTaken.toString(), "");
 	}
 	
-		public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
+	public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
 		int m = Y.length() + 1;
 		int n = 2;
 		int gapPenalty = 30;
@@ -303,13 +317,13 @@ public class SequenceAlignment {
 			BufferedWriter buffer = new BufferedWriter(output);
 
 			// Write Line1 to output file
-			if(line1!= null || !(line1 == "")){
+			if(line1!= null && !(line1 == "")){
 				buffer.write(line1);
 				buffer.newLine();
 			}
 
 			// Write line2 to output file
-			if(line2!= null || !(line2 == "")){
+			if(line2!= null && !(line2 == "")){
 				buffer.write(line2);
 				buffer.newLine();
 			}
