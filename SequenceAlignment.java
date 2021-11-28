@@ -10,6 +10,7 @@ public class SequenceAlignment {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		long startTime = System.currentTimeMillis();
 		Runtime runtime = Runtime.getRuntime();
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
 		
@@ -22,6 +23,9 @@ public class SequenceAlignment {
 		
 		long endMemory = runtime.totalMemory() - runtime.freeMemory();
 		Double memoryTaken = (endMemory - startMemory)/1024.0;
+		long endTime = System.currentTimeMillis();
+		Double timeTaken = (endTime - startTime)/1000.0;
+		addToOutputFile(timeTaken.toString(), "");
 		addToOutputFile(memoryTaken.toString(), "");
 	}
 
@@ -110,7 +114,6 @@ public class SequenceAlignment {
 	}
 
 	public static void sequenceAlignment(String X, String Y) {
-		long startTime = System.currentTimeMillis();
 		Runtime runtime = Runtime.getRuntime();
 		
 
@@ -142,7 +145,7 @@ public class SequenceAlignment {
 				}
 			}
 		}
-		System.out.println(seqArr[m-1][n-1]);
+		Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
 
 		// //For Testing Purposes:
 		// for (int[] x1 : seqArr) {
@@ -226,9 +229,7 @@ public class SequenceAlignment {
 		String line2 = secondX + " " + secondY;
 
 		addToOutputFile(line1, line2);
-		long endTime = System.currentTimeMillis();
-		Double timeTaken = (endTime - startTime)/1000.0;
-		addToOutputFile(timeTaken.toString(), "");
+		addToOutputFile(minPenalty.toString(), "");
 	}
 	
 	public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
@@ -251,7 +252,6 @@ public class SequenceAlignment {
 				seqArr[i][0] = seqArr[i][1];
 			}
 		}
-		System.out.println(seqArr[m-1][1]);
 		return seqArr;
 	}
 	
