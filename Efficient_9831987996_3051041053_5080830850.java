@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.lang.Math;
 import java.util.*;
 
-public class Efficient {
+public class Efficient_9831987996_3051041053_5080830850 {
 	static Double sum = 0.0;
 
 	public static void main(String[] args) {
