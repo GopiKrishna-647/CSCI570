@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.lang.Math;
 import java.util.*;
 
-public class basic{
+public class Basic_9831987996_3051041053_5080830850{
 	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
 	public static void main(String[] args) {
 
