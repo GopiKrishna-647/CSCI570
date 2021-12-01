@@ -16,9 +16,9 @@ public class Efficient {
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
 
 		// Input File
-		//File input = new File(System.getProperty("user.dir") + "/" + args[0]);
+		File input = new File(System.getProperty("user.dir") + "/" + args[0]);
 		
-		File input = new File(System.getProperty("user.dir") + "/" + "input.txt");
+		//File input = new File(System.getProperty("user.dir") + "/" + "input.txt");
 
 		if(input.exists()){
 			// Create output file if it does not exist
