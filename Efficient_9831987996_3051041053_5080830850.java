@@ -6,6 +6,7 @@ import java.lang.Math;
 import java.util.*;
 
 public class Efficient {
+	static Double sum = 0.0;
 
 	public static void main(String[] args) {
 
@@ -15,9 +16,9 @@ public class Efficient {
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
 
 		// Input File
-		File input = new File(System.getProperty("user.dir") + "/" + args[0]);
+		//File input = new File(System.getProperty("user.dir") + "/" + args[0]);
 		
-		//File input = new File(System.getProperty("user.dir") + "/" + "input1.txt");
+		File input = new File(System.getProperty("user.dir") + "/" + "input.txt");
 
 		if(input.exists()){
 			// Create output file if it does not exist
@@ -102,9 +103,7 @@ public class Efficient {
 
 		Map<String, String> result = dcDp(X, Y);
 		
-		Double minPenalty = Double.valueOf(computeAlignmentCost(result.get("X"), result.get("Y")));
-		
-		parseDataForOutputFile(result.get("X"), result.get("Y"), minPenalty);
+		parseDataForOutputFile(result.get("X"), result.get("Y"), sum);
 	}
 	
 	public static Map<String, String> sequenceAlignment(String X, String Y) {
@@ -138,6 +137,8 @@ public class Efficient {
 			}
 		}
 
+		Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
+		sum+= minPenalty;
 		String outputX = "";
 		String outputY = "";
 
@@ -302,24 +303,6 @@ public class Efficient {
 		}
 		return mismatch;
 
-	}
-	
-	public static int computeAlignmentCost(String X, String Y) {
-		
-		Set<Character> s = new HashSet<Character>();
-		s.add('A');
-		s.add('C');
-		s.add('G');
-		s.add('T');
-		int cost = 0;
-		for(int i = 0; i < X.length();i++) {
-			if(s.contains(X.charAt(i)) && s.contains(Y.charAt(i))) {
-				cost += misMatch(X.charAt(i), Y.charAt(i));
-			} else {
-				cost+= 30;
-			}
-		}
-		return cost;
 	}
 	
 	public static String parseString(String str, ArrayList<Integer> arr){
