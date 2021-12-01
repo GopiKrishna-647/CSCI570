@@ -5,28 +5,39 @@ import java.io.BufferedWriter;
 import java.lang.Math;
 import java.util.*;
 
-public class SequenceAlignment {
-	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
+// 9831987996_3051041053_5080830850_
 
+public class basic{
+	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		long startTime = System.currentTimeMillis();
+
+    // Define variables to calculate time and memory for the basic algorithm
+    long startTime = System.currentTimeMillis();
 		Runtime runtime = Runtime.getRuntime();
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
-		
-		File input = new File(System.getProperty("user.dir") + "/input.txt");
 
-		// Create output file if it does not exist
-		createOutputFile();
+    // Input File
+    File input = new File(System.getProperty("user.dir") + "/" + args[0]);
 
-		finalProject(input);
-		
-		long endMemory = runtime.totalMemory() - runtime.freeMemory();
-		Double memoryTaken = (endMemory - startMemory)/1024.0;
-		long endTime = System.currentTimeMillis();
-		Double timeTaken = (endTime - startTime)/1000.0;
-		addToOutputFile(timeTaken.toString(), "");
-		addToOutputFile(memoryTaken.toString(), "");
+    if(input.exists()){
+      // Create output file if it does not exist
+      createOutputFile();
+
+      // Parse the input file and Call the Basic Algorithm function
+  		finalProject(input);
+
+      // Calculate Time and Memory for the Basic Algorithm
+      long endMemory = runtime.totalMemory() - runtime.freeMemory();
+  		Double memoryTaken = (endMemory - startMemory)/1024.0;
+  		long endTime = System.currentTimeMillis();
+  		Double timeTaken = (endTime - startTime)/1000.0;
+  		addToOutputFile(timeTaken.toString(), "");
+  		addToOutputFile(memoryTaken.toString(), "");
+    }
+    else{
+      System.out.println("input.txt file was not found.");
+    }
+
 	}
 
 	public static void finalProject(File input){
@@ -88,18 +99,7 @@ public class SequenceAlignment {
 			System.out.println("Not same length");
 		}
 
-		// // Make sure the longer string represents Columns while shorter string represents Rows
-		// //Y = columns
-		// //X = rows
-		// String temp = "";
-		// if(X.length() > Y.length()){
-		// 	temp = Y;
-		// 	Y = X;
-		// 	X = temp;
-		// }
-
 		sequenceAlignment(X, Y);
-		memoryEfficientSequenceAlignemnt(X, Y);
 	}
 
 	public static String parseString(String str, ArrayList<Integer> arr){
@@ -114,9 +114,6 @@ public class SequenceAlignment {
 	}
 
 	public static void sequenceAlignment(String X, String Y) {
-		Runtime runtime = Runtime.getRuntime();
-		
-
 		// 2D arr with length of each string
 		int n = X.length()+1;	// Row
 		int m = Y.length()+1; // Column
@@ -145,15 +142,6 @@ public class SequenceAlignment {
 				}
 			}
 		}
-		Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
-
-		// //For Testing Purposes:
-		// for (int[] x1 : seqArr) {
-		// 	for (int y : x1) {
-		// 		System.out.print(y + " ");
-		// 	}
-		// 	System.out.println();
-		// }
 
 		String outputX = "";
 		String outputY = "";
@@ -200,12 +188,6 @@ public class SequenceAlignment {
 		outputX = reverseX.toString();
 		outputY = reverseY.toString();
 
-		// // For Testing Purposes
-		// System.out.println("X: " + X);
-		// System.out.println("Y: " + Y);
-		// System.out.println("outputX: " + outputX);
-		// System.out.println("outputY: " + outputY);
-
 		// Parse data for the output File
 		String firstX = outputX;
 		String firstY = outputY;
@@ -223,70 +205,17 @@ public class SequenceAlignment {
 			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
 		}
 
-		// line1: First 50 X, First 50 Y
-		// line2: Last 50 X, Last 50 Y
-		String line1 = firstX + " " + firstY;
-		String line2 = secondX + " " + secondY;
+		// line1: First 50 X, Last 50 X
+		String line1 = firstX + " " + secondX;
+
+    // line2: First 50 Y, Last 50 Y
+		String line2 = firstY + " " + secondY;
 
 		addToOutputFile(line1, line2);
-		addToOutputFile(minPenalty.toString(), "");
-	}
-	
-	public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
-		int m = Y.length() + 1;
-		int n = 2;
-		int gapPenalty = 30;
-		
-		int[][] seqArr = new int[m][2];
-		
-		for(int i = 0; i < m; i++) {
-			seqArr[i][0] = i * 30;
-		}
-		
-		for(int j = 1; j < X.length()+1; j++) {
-			seqArr[0][1] = j * gapPenalty;
-			for(int i = 1; i < m; i++) {
-				seqArr[i][1] = Math.min(seqArr[i - 1][0] + misMatch(Y.charAt(i-1),X.charAt(j-1)), Math.min(seqArr[i][0] + gapPenalty, seqArr[i - 1][1] + gapPenalty));
-			}
-			for(int i = 0; i < m; i++) {
-				seqArr[i][0] = seqArr[i][1];
-			}
-		}
-		return seqArr;
-	}
-	
-	public static int[][] backwardFormulation(String X, String Y) {
-		StringBuilder updatedX = new StringBuilder(X).reverse();
-		StringBuilder updatedY = new StringBuilder(Y).reverse();
-		return memoryEfficientSequenceAlignemnt(updatedX.toString(), updatedY.toString());
-	}
-	
-	public static void divideAndConquerDp(String X, String Y) {
-		int[][] seqArr1 = memoryEfficientSequenceAlignemnt(X, Y.substring(0, (Y.length()/2)));
-		int[][] seqArr2 = backwardFormulation(X, Y.substring((Y.length()/2), Y.length()));
-		int m = X.length();
-		int n = Y.length();
-		
-		if(m <= 2 || n <= 2) {
-			sequenceAlignment(X, Y);
-		}
-		
-		int sum = seqArr1[0][1] + seqArr2[0][1];
-		int index = 0;
-		for(int i = 1; i < n/2;i++) {
-			int temp = seqArr1[i][1] + seqArr2[i][1];
-			if(temp < sum) {
-				sum = temp;
-				index = i;
-			}
-		}
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		indices.add(index);
-		indices.add(n / 2);
-		P.add(indices);
-		divideAndConquerDp(X.substring(0, index+1), Y.substring(0, n/2 + 1));
-		divideAndConquerDp(X.substring(index+1, m), Y.substring(n/2 + 1, n));
-		
+
+    Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
+    addToOutputFile(minPenalty.toString(), "");
+
 	}
 
 	/**
@@ -327,6 +256,8 @@ public class SequenceAlignment {
 				buffer.write(line2);
 				buffer.newLine();
 			}
+      // TODO: Adding a new line at the end of file, not needed when all output has been printed.
+
 
 			buffer.close();
 			output.close();

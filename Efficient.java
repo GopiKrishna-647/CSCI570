@@ -5,28 +5,40 @@ import java.io.BufferedWriter;
 import java.lang.Math;
 import java.util.*;
 
-public class SequenceAlignment {
-	static ArrayList<ArrayList<Integer>> P = new ArrayList<ArrayList<Integer>>();
+public class Efficient {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+
+		// Define variables to calculate time and memory for the basic algorithm
 		long startTime = System.currentTimeMillis();
 		Runtime runtime = Runtime.getRuntime();
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
-		
-		File input = new File(System.getProperty("user.dir") + "/input.txt");
 
-		// Create output file if it does not exist
-		createOutputFile();
-
-		finalProject(input);
+		// Input File
+		File input = new File(System.getProperty("user.dir") + "/" + args[0]);
 		
-		long endMemory = runtime.totalMemory() - runtime.freeMemory();
-		Double memoryTaken = (endMemory - startMemory)/1024.0;
-		long endTime = System.currentTimeMillis();
-		Double timeTaken = (endTime - startTime)/1000.0;
-		addToOutputFile(timeTaken.toString(), "");
-		addToOutputFile(memoryTaken.toString(), "");
+		//File input = new File(System.getProperty("user.dir") + "/" + "input1.txt");
+
+		if(input.exists()){
+			// Create output file if it does not exist
+			createOutputFile();
+
+			// Parse the input file and Call the Basic Algorithm function
+			finalProject(input);
+
+
+			// Calculate Time and Memory for the Basic Algorithm
+			long endMemory = runtime.totalMemory() - runtime.freeMemory();
+			Double memoryTaken = (endMemory - startMemory)/1024.0;
+			long endTime = System.currentTimeMillis();
+			Double timeTaken = (endTime - startTime)/1000.0;
+			addToOutputFile(timeTaken.toString(), "");
+			addToOutputFile(memoryTaken.toString(), "");
+		}
+		else{
+			System.out.println("input.txt file was not found.");
+		}
+
 	}
 
 	public static void finalProject(File input){
@@ -88,34 +100,15 @@ public class SequenceAlignment {
 			System.out.println("Not same length");
 		}
 
-		// // Make sure the longer string represents Columns while shorter string represents Rows
-		// //Y = columns
-		// //X = rows
-		// String temp = "";
-		// if(X.length() > Y.length()){
-		// 	temp = Y;
-		// 	Y = X;
-		// 	X = temp;
-		// }
-
-		sequenceAlignment(X, Y);
-		memoryEfficientSequenceAlignemnt(X, Y);
-	}
-
-	public static String parseString(String str, ArrayList<Integer> arr){
-
-		for (int i = 0; i < arr.size(); i++){
-			String prev = str;
-
-			str = prev.substring(0,arr.get(i)+1) + prev + prev.substring(arr.get(i)+1, prev.length());
-		}
-
-		return str;
-	}
-
-	public static void sequenceAlignment(String X, String Y) {
-		Runtime runtime = Runtime.getRuntime();
+		Map<String, String> result = dcDp(X, Y);
 		
+		Double minPenalty = Double.valueOf(computeAlignmentCost(result.get("X"), result.get("Y")));
+		
+		addToOutputFile(result.get("X"), result.get("Y"));
+		addToOutputFile(minPenalty.toString(), "");
+	}
+	
+	public static Map<String, String> sequenceAlignment(String X, String Y) {
 
 		// 2D arr with length of each string
 		int n = X.length()+1;	// Row
@@ -145,15 +138,6 @@ public class SequenceAlignment {
 				}
 			}
 		}
-		Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
-
-		// //For Testing Purposes:
-		// for (int[] x1 : seqArr) {
-		// 	for (int y : x1) {
-		// 		System.out.print(y + " ");
-		// 	}
-		// 	System.out.println();
-		// }
 
 		String outputX = "";
 		String outputY = "";
@@ -199,37 +183,48 @@ public class SequenceAlignment {
 
 		outputX = reverseX.toString();
 		outputY = reverseY.toString();
+		
+		Map<String, String> result = new HashMap<String, String>();
+		result.put("X", outputX);
+		result.put("Y", outputY);
+		return result;
 
 		// // For Testing Purposes
 		// System.out.println("X: " + X);
 		// System.out.println("Y: " + Y);
 		// System.out.println("outputX: " + outputX);
 		// System.out.println("outputY: " + outputY);
-
-		// Parse data for the output File
-		String firstX = outputX;
-		String firstY = outputY;
-		String secondX = outputX;
-		String secondY = outputY;
-
-		if (outputX.length() > 50){
-			firstX = outputX.toString().substring(0,50);
-			secondX = outputX.toString().substring(outputX.length()-50,outputX.length()-1);
-
+	}
+	
+	public static Map<String, String> dcDp(String X, String Y) {
+		int m = X.length();
+		int n = Y.length();
+		if(m <= 2 || n <= 2) {
+			return sequenceAlignment(X, Y);
 		}
-
-		if (outputY.length() > 50){
-			firstY = outputY.toString().substring(0,50);
-			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
+		String firstHalfX = X.substring(0, X.length() /2);
+		String secondHalf = X.substring(X.length()/2, X.length());
+		
+		int[][] seqArr1 = memoryEfficientSequenceAlignemnt(firstHalfX, Y);
+		int[][] seqArr2 = backwardFormulation(secondHalf, Y);
+		
+		int sum = seqArr1[0][1] + seqArr2[n][1];
+		int index = 0;
+		for(int i = 1; i < n;i++) {
+			int temp = seqArr1[i][1] + seqArr2[n-i][1];
+			if(temp < sum) {
+				sum = temp;
+				index = i;
+			}
 		}
-
-		// line1: First 50 X, First 50 Y
-		// line2: Last 50 X, Last 50 Y
-		String line1 = firstX + " " + firstY;
-		String line2 = secondX + " " + secondY;
-
-		addToOutputFile(line1, line2);
-		addToOutputFile(minPenalty.toString(), "");
+		
+		Map<String, String> seq1 = dcDp(firstHalfX, Y.substring(0, index));
+		Map<String, String> seq2 = dcDp(secondHalf, Y.substring(index, Y.length()));
+		
+		Map<String, String> result = new HashMap<String, String>();
+		result.put("X", seq1.get("X") + seq2.get("X"));
+		result.put("Y", seq1.get("Y") + seq2.get("Y"));
+		return result;
 	}
 	
 	public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
@@ -261,32 +256,82 @@ public class SequenceAlignment {
 		return memoryEfficientSequenceAlignemnt(updatedX.toString(), updatedY.toString());
 	}
 	
-	public static void divideAndConquerDp(String X, String Y) {
-		int[][] seqArr1 = memoryEfficientSequenceAlignemnt(X, Y.substring(0, (Y.length()/2)));
-		int[][] seqArr2 = backwardFormulation(X, Y.substring((Y.length()/2), Y.length()));
-		int m = X.length();
-		int n = Y.length();
-		
-		if(m <= 2 || n <= 2) {
-			sequenceAlignment(X, Y);
+	public static void parseDataForOutputFile(String outputX, String outputY, Double minPenalty) {
+		// Parse data for the output File
+		String firstX = outputX;
+		String firstY = outputY;
+		String secondX = outputX;
+		String secondY = outputY;
+
+		if (outputX.length() > 50){
+			firstX = outputX.toString().substring(0,50);
+			secondX = outputX.toString().substring(outputX.length()-50,outputX.length()-1);
+
 		}
+
+		if (outputY.length() > 50){
+			firstY = outputY.toString().substring(0,50);
+			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
+		}
+
+		// line1: First 50 X, First 50 Y
+		// line2: Last 50 X, Last 50 Y
+		String line1 = firstX + " " + firstY;
+		String line2 = secondX + " " + secondY;
+
+		addToOutputFile(line1, line2);
+		addToOutputFile(minPenalty.toString(), "");
+	}
+	
+	// mismatch penalty
+	public static int misMatch(char x, char y) {
+		int mismatch = 0;
+		if (x == y) {
+			return 0;
+		} else if ((x == 'A' && y == 'C') || (x == 'C' && y == 'A')) {
+			mismatch = 110;
+		} else if ((x == 'A' && y == 'G') || (x == 'G' && y == 'A')) {
+			mismatch = 48;
+		} else if ((x == 'A' && y == 'T') || (x == 'T' && y == 'A')) {
+			mismatch = 94;
+		} else if ((x == 'C' && y == 'G') || (x == 'G' && y == 'C')) {
+			mismatch = 118;
+		} else if ((x == 'C' && y == 'T') || (x == 'T' && y == 'C')) {
+			mismatch = 48;
+		} else if ((x == 'G' && y == 'T') || (x == 'T' && y == 'G')) {
+			mismatch = 110;
+		}
+		return mismatch;
+
+	}
+	
+	public static int computeAlignmentCost(String X, String Y) {
 		
-		int sum = seqArr1[0][1] + seqArr2[0][1];
-		int index = 0;
-		for(int i = 1; i < n/2;i++) {
-			int temp = seqArr1[i][1] + seqArr2[i][1];
-			if(temp < sum) {
-				sum = temp;
-				index = i;
+		Set<Character> s = new HashSet<Character>();
+		s.add('A');
+		s.add('C');
+		s.add('G');
+		s.add('T');
+		int cost = 0;
+		for(int i = 0; i < X.length();i++) {
+			if(s.contains(X.charAt(i)) && s.contains(Y.charAt(i))) {
+				cost += misMatch(X.charAt(i), Y.charAt(i));
+			} else {
+				cost+= 30;
 			}
 		}
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		indices.add(index);
-		indices.add(n / 2);
-		P.add(indices);
-		divideAndConquerDp(X.substring(0, index+1), Y.substring(0, n/2 + 1));
-		divideAndConquerDp(X.substring(index+1, m), Y.substring(n/2 + 1, n));
-		
+		return cost;
+	}
+	
+	public static String parseString(String str, ArrayList<Integer> arr){
+
+		for (int i = 0; i < arr.size(); i++){
+			String prev = str;
+
+			str = prev.substring(0,arr.get(i)+1) + prev + prev.substring(arr.get(i)+1, prev.length());
+		}
+
+		return str;
 	}
 
 	/**
@@ -327,6 +372,8 @@ public class SequenceAlignment {
 				buffer.write(line2);
 				buffer.newLine();
 			}
+      // TODO: Adding a new line at the end of file, not needed when all output has been printed.
+
 
 			buffer.close();
 			output.close();
@@ -335,30 +382,7 @@ public class SequenceAlignment {
 			System.out.println("An error occurred while writing to the output.txt file.");
 			e.printStackTrace();
 		}
-
-
 	}
 
-	// mismatch penalty
-	public static int misMatch(char x, char y) {
-		int mismatch = 0;
-		if (x == y) {
-			return 0;
-		} else if ((x == 'A' && y == 'C') || (x == 'C' && y == 'A')) {
-			mismatch = 110;
-		} else if ((x == 'A' && y == 'G') || (x == 'G' && y == 'A')) {
-			mismatch = 48;
-		} else if ((x == 'A' && y == 'T') || (x == 'T' && y == 'A')) {
-			mismatch = 94;
-		} else if ((x == 'C' && y == 'G') || (x == 'G' && y == 'C')) {
-			mismatch = 118;
-		} else if ((x == 'C' && y == 'T') || (x == 'T' && y == 'C')) {
-			mismatch = 48;
-		} else if ((x == 'G' && y == 'T') || (x == 'T' && y == 'G')) {
-			mismatch = 110;
-		}
-		return mismatch;
-
-	}
 
 }
