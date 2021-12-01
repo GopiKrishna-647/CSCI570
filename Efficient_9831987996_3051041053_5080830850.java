@@ -15,9 +15,9 @@ public class Efficient {
 		long startMemory = runtime.totalMemory() - runtime.freeMemory();
 
 		// Input File
-		File input = new File(System.getProperty("user.dir") + "/" + args[0]);
-
-		//File input = new File(System.getProperty("user.dir") + "/" + "input1.txt");
+		//File input = new File(System.getProperty("user.dir") + "/" + args[0]);
+		
+		File input = new File(System.getProperty("user.dir") + "/" + "input1.txt");
 
 		if(input.exists()){
 			// Create output file if it does not exist
@@ -101,13 +101,12 @@ public class Efficient {
 		}
 
 		Map<String, String> result = dcDp(X, Y);
-
+		
 		Double minPenalty = Double.valueOf(computeAlignmentCost(result.get("X"), result.get("Y")));
-
-		addToOutputFile(result.get("X"), result.get("Y"));
-		addToOutputFile(minPenalty.toString(), "");
+		
+		parseDataForOutputFile(result.get("X"), result.get("Y"), minPenalty);
 	}
-
+	
 	public static Map<String, String> sequenceAlignment(String X, String Y) {
 
 		// 2D arr with length of each string
@@ -183,7 +182,7 @@ public class Efficient {
 
 		outputX = reverseX.toString();
 		outputY = reverseY.toString();
-
+		
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("X", outputX);
 		result.put("Y", outputY);
@@ -195,7 +194,7 @@ public class Efficient {
 		// System.out.println("outputX: " + outputX);
 		// System.out.println("outputY: " + outputY);
 	}
-
+	
 	public static Map<String, String> dcDp(String X, String Y) {
 		int m = X.length();
 		int n = Y.length();
@@ -204,10 +203,10 @@ public class Efficient {
 		}
 		String firstHalfX = X.substring(0, X.length() /2);
 		String secondHalf = X.substring(X.length()/2, X.length());
-
+		
 		int[][] seqArr1 = memoryEfficientSequenceAlignemnt(firstHalfX, Y);
 		int[][] seqArr2 = backwardFormulation(secondHalf, Y);
-
+		
 		int sum = seqArr1[0][1] + seqArr2[n][1];
 		int index = 0;
 		for(int i = 1; i < n;i++) {
@@ -217,27 +216,27 @@ public class Efficient {
 				index = i;
 			}
 		}
-
+		
 		Map<String, String> seq1 = dcDp(firstHalfX, Y.substring(0, index));
 		Map<String, String> seq2 = dcDp(secondHalf, Y.substring(index, Y.length()));
-
+		
 		Map<String, String> result = new HashMap<String, String>();
 		result.put("X", seq1.get("X") + seq2.get("X"));
 		result.put("Y", seq1.get("Y") + seq2.get("Y"));
 		return result;
 	}
-
+	
 	public static int[][] memoryEfficientSequenceAlignemnt(String X, String Y) {
 		int m = Y.length() + 1;
 		int n = 2;
 		int gapPenalty = 30;
-
+		
 		int[][] seqArr = new int[m][2];
-
+		
 		for(int i = 0; i < m; i++) {
 			seqArr[i][0] = i * 30;
 		}
-
+		
 		for(int j = 1; j < X.length()+1; j++) {
 			seqArr[0][1] = j * gapPenalty;
 			for(int i = 1; i < m; i++) {
@@ -249,13 +248,13 @@ public class Efficient {
 		}
 		return seqArr;
 	}
-
+	
 	public static int[][] backwardFormulation(String X, String Y) {
 		StringBuilder updatedX = new StringBuilder(X).reverse();
 		StringBuilder updatedY = new StringBuilder(Y).reverse();
 		return memoryEfficientSequenceAlignemnt(updatedX.toString(), updatedY.toString());
 	}
-
+	
 	public static void parseDataForOutputFile(String outputX, String outputY, Double minPenalty) {
 		// Parse data for the output File
 		String firstX = outputX;
@@ -265,13 +264,13 @@ public class Efficient {
 
 		if (outputX.length() > 50){
 			firstX = outputX.toString().substring(0,50);
-			secondX = outputX.toString().substring(outputX.length()-50,outputX.length()-1);
+			secondX = outputX.toString().substring(outputX.length()-50,outputX.length());
 
 		}
 
 		if (outputY.length() > 50){
 			firstY = outputY.toString().substring(0,50);
-			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
+			secondY = outputY.toString().substring(outputY.length()-50,outputY.length());
 		}
 
 		// line1: First 50 X, First 50 Y
@@ -282,7 +281,7 @@ public class Efficient {
 		addToOutputFile(line1, line2);
 		addToOutputFile(minPenalty.toString(), "");
 	}
-
+	
 	// mismatch penalty
 	public static int misMatch(char x, char y) {
 		int mismatch = 0;
@@ -304,9 +303,9 @@ public class Efficient {
 		return mismatch;
 
 	}
-
+	
 	public static int computeAlignmentCost(String X, String Y) {
-
+		
 		Set<Character> s = new HashSet<Character>();
 		s.add('A');
 		s.add('C');
@@ -322,7 +321,7 @@ public class Efficient {
 		}
 		return cost;
 	}
-
+	
 	public static String parseString(String str, ArrayList<Integer> arr){
 
 		for (int i = 0; i < arr.size(); i++){
