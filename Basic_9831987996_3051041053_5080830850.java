@@ -194,13 +194,13 @@ public class basic{
 
 		if (outputX.length() > 50){
 			firstX = outputX.toString().substring(0,50);
-			secondX = outputX.toString().substring(outputX.length()-50,outputX.length()-1);
+			secondX = outputX.toString().substring(outputX.length()-50,outputX.length());
 
 		}
 
 		if (outputY.length() > 50){
 			firstY = outputY.toString().substring(0,50);
-			secondY = outputY.toString().substring(outputY.length()-50,outputY.length()-1);
+			secondY = outputY.toString().substring(outputY.length()-50,outputY.length());
 		}
 
 		// line1: First 50 X, Last 50 X
