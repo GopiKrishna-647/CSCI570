@@ -6,7 +6,8 @@ import java.lang.Math;
 import java.util.*;
 
 public class Efficient_9831987996_3051041053_5080830850 {
-	static Double sum = 0.0;
+	static Double alignmentCost = 0.0;
+	static int count = 0;
 
 	public static void main(String[] args) {
 
@@ -103,7 +104,7 @@ public class Efficient_9831987996_3051041053_5080830850 {
 
 		Map<String, String> result = dcDp(X, Y);
 		
-		parseDataForOutputFile(result.get("X"), result.get("Y"), sum);
+		parseDataForOutputFile(result.get("X"), result.get("Y"), alignmentCost);
 	}
 	
 	public static Map<String, String> sequenceAlignment(String X, String Y) {
@@ -138,7 +139,7 @@ public class Efficient_9831987996_3051041053_5080830850 {
 		}
 
 		Double minPenalty = Double.valueOf(seqArr[m-1][n-1]);
-		sum+= minPenalty;
+		//sum+= minPenalty;
 		String outputX = "";
 		String outputY = "";
 
@@ -218,6 +219,11 @@ public class Efficient_9831987996_3051041053_5080830850 {
 			}
 		}
 		
+		if(count == 0) {
+			alignmentCost = Double.valueOf(sum);
+			count++;
+		}
+		
 		Map<String, String> seq1 = dcDp(firstHalfX, Y.substring(0, index));
 		Map<String, String> seq2 = dcDp(secondHalf, Y.substring(index, Y.length()));
 		
@@ -276,8 +282,8 @@ public class Efficient_9831987996_3051041053_5080830850 {
 
 		// line1: First 50 X, First 50 Y
 		// line2: Last 50 X, Last 50 Y
-		String line1 = firstX + " " + firstY;
-		String line2 = secondX + " " + secondY;
+		String line1 = firstX + " " + secondX;
+		String line2 = firstY + " " + secondY;
 
 		addToOutputFile(line1, line2);
 		addToOutputFile(minPenalty.toString(), "");
