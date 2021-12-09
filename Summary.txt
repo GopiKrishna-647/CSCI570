@@ -1,0 +1,23 @@
+﻿Summary of Results/ Insight/ Observations and Contribution: 
+Initially, Navya and Gopi had a third member in the group. We worked on implementing the Basic Algorithm together, and once that was almost complete, the third member decided to drop the class. This way, we asked Daniel Bai to join our group.
+
+
+* Basic Algorithm: Navya and Gopi worked on the implementation; both contributed to the program simultaneously using git repositories. Daniel helped proofread the code, helped clean up, and added comments to the code. Then we all tested the code with various inputs and compared the answers to the answers we got from manually solving the problem. 
+
+
+* Memory Efficient Algorithm: The pseudo-code provided in the textbook raised a few concerns. To clarify our confusion with the algorithm, we attended TA’s office hours and posted our concerns on Piazza. After getting the answers, we started converting our pseudo code to Java code. While Gopi worked on most of the code, Navya tested the code with various inputs, and Daniel gathered appropriate data from basic and memory-efficient algorithms for the plots.
+
+
+* Memory Calculation: We faced many challenges while calculating the memory usage of our programs. The plots showed that the values for Basic and Memory-efficient versions were close and kept fluctuating. Therefore, it was hard to determine an appropriate ratio for the two algorithms’ memory. We discussed our concern with TA, and TA asked us to post the problem on Piazza. However, we did not get an appropriate answer to our post. We started researching various ways to calculate memory and tried many different methodologies before finally realizing our mistake. We realized that we were using the wrong values to generate the memory plot. Once we corrected our error, we observed that the basic algorithm took a lot more memory than the memory-efficient algorithm. 
+
+
+* Runtime Calculation: Run time calculation was easy for us to implement; we used the time at the end of the program execution and subtracted the time before program execution. We were able to see a difference in CPU time used for both programs. For some input values, we noticed that the CPU time was a little higher for the Memory Efficient Algorithm than the basic algorithm.
+
+
+* Plots: One of the TAs posted the new base test cases and mistakenly said that the 4th line of the output.txt file should be memory and the 5th line should be time. We generated our memory and CPU time plots based on this information. However, the final project guidelines stated that the time in the output.txt file should be the line that comes before memory, and our output.txt file was generated using this information. This way, the output file had a 4th line representing the time, however, our plot was using this line for the memory graph. After realizing our mistake and getting clarification on the format of the output.txt file, we were able to plot the graphs correctly and make correct observations. 
+
+
+Daniel came up with 15 input values for the plots. The input values varied from smallest String size to largest (keeping in mind the length constraints provided to us). Then Daniel used Microsoft Excel to plot the memory usage and runtime graphs (Microsoft Excel was approved by one of the TAs). 
+
+
+* Summary.txt: While Gopi and Daniel wrapped up the final testing of algorithms and the plots, Navya worked on the Summary.txt file. The file was shared among the three using Google Drive so that everyone could view and edit the file as needed.
